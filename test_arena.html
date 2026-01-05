@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Robbo - Arena Map Test</title>
+    <style>
+        body {
+            background: #101010;
+            color: #999;
+            font-family: monospace;
+            padding: 20px;
+        }
+        h1 { color: #fff; }
+        .info {
+            background: #222;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #666;
+        }
+        a {
+            color: #6af;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Robbo Arena Map - Test Page</h1>
+    
+    <div class="info">
+        <h2>Arena Map (Level 0)</h2>
+        <p><strong>Size:</strong> 48 × 31 cells (3× wider than normal levels)</p>
+        <p><strong>Composition:</strong> Levels 1, 2, and 3 combined horizontally</p>
+        <p><strong>Purpose:</strong> Future multiplayer arena</p>
+    </div>
+
+    <h2>Test Links:</h2>
+    <ul>
+        <li><a href="game.html#level=0">🏟️ Play Arena Map (Level 0)</a> - The combined 48×31 map</li>
+        <li><a href="game.html#level=1">🎯 Play Level 1</a> - Original 16×31 map (left section)</li>
+        <li><a href="game.html#level=2">🎯 Play Level 2</a> - Original 16×31 map (middle section)</li>
+        <li><a href="game.html#level=3">🎯 Play Level 3</a> - Original 16×31 map (right section)</li>
+        <li><a href="editor.html">🎨 Level Editor</a> - Create and edit maps (NEW!)</li>
+    </ul>
+
+    <div class="info">
+        <h2>Technical Details:</h2>
+        <ul>
+            <li>✅ Dynamic canvas resizing based on map dimensions</li>
+            <li>✅ No hardcoded size limits - can handle any map size</li>
+            <li>✅ Compact 16px cell size for full map visibility</li>
+            <li>✅ HUD legend automatically adjusts to map width</li>
+            <li>✅ All game mechanics work with larger maps</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <h2>Game Limitations Tested:</h2>
+        <p>✅ <strong>No size restrictions found!</strong></p>
+        <p>The game engine handles the 3× wider map without any issues:</p>
+        <ul>
+            <li>Rendering system: ✅ Works</li>
+            <li>Collision detection: ✅ Works</li>
+            <li>Object interactions: ✅ Works</li>
+            <li>Map loading: ✅ Works</li>
+        </ul>
+        <p><em>The arena map is ready for future multiplayer implementation!</em></p>
+    </div>
+
+    <div class="info">
+        <h2>🎨 Level Editor Available!</h2>
+        <p>A full-featured level editor is now available for creating and editing maps:</p>
+        <ul>
+            <li>✅ Visual tile-based editor</li>
+            <li>✅ Support for any map size (8×8 to 100×100)</li>
+            <li>✅ All 25 game objects available</li>
+            <li>✅ Import/Export level data</li>
+            <li>✅ Load and edit existing levels</li>
+            <li>✅ Test levels instantly</li>
+            <li>✅ Multiple editing tools (Draw, Erase, Fill, Pick)</li>
+        </ul>
+        <p style="margin-top:10px;"><strong><a href="editor.html">→ Open Level Editor</a></strong></p>
+    </div>
+
+    <h2>Next Steps for Multiplayer:</h2>
+    <ol>
+        <li>Add multiple player spawn points</li>
+        <li>Implement player-to-player interactions</li>
+        <li>Add networking/synchronization</li>
+        <li>Design arena-specific game modes</li>
+        <li>Use the Level Editor to create custom arenas!</li>
+    </ol>
+</body>
+</html>

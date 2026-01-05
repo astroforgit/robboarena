@@ -59,7 +59,7 @@
           };
 
     View.prototype = {
-        cellSize: 32,
+        cellSize: 16,
         set: function( key, value ){
             this[ key ] = value;
             this[key+'Set'] && this[key+'Set'](value);
@@ -69,12 +69,11 @@
             this.sprites.modifyColors( data );
             if(!this.standalone) {
               this.canvasCtx.fillStyle = this.bgColor = data[ 0 ];
-              if( this.controller.editMode ) {
-                this.mapCanvasCtx.fillStyle = this.bgColor = data[ 0 ];
-              }
               this.lastColors = data;
               this.legendCtx.fillStyle = this.lastColors[ 4 ];
-              this.legendCtx.fillRect( 0, 0, 512, 64 );
+              // Use dynamic legend width
+              var legendWidth = parseInt(this.legend.getAttribute('width')) || 256;
+              this.legendCtx.fillRect( 0, 0, legendWidth, 32 );
               this.renderTo.style.background = this.lastColors[ 4 ];
             }
         },
@@ -82,9 +81,8 @@
           this.animation = false;
           this.controller.scrolled = true;
           this.gap = [0, 9];
-          this.canvasHolder.scrollTop = 0;
           this.canvasCtx.fillStyle = '#000000';
-          var w = 512, h = 324, cellSize = this.cellSize;
+          var w = 256, h = 496, cellSize = this.cellSize;
 
           this.canvasCtx.fillRect(0,0,w, h);
           this.legend.style.visibility = 'hidden';
@@ -118,7 +116,6 @@
 
           this.finalFrameCounter = 0;
           var _animate = function(){
-            _self.canvasHolder.scrollTop = 0;
             undraw.forEach(function(rect){
               _self.canvasCtx.fillRect.apply(_self.canvasCtx, rect);
             });
@@ -209,43 +206,10 @@
 
         },
         scroll: function(  ){
-            if(this.standalone){
-              this.controller.scrolled = true;
-              this.controller.robbo.scrolled = true;
-              this.controller.fire('scrolled');
-              return;
-            }
-            var y = this.controller.robbo.y,
-                gap = this.gap,
-                originalGap = [gap[0],gap[1]];//,
-                //animateGap = this.animateGap = gap.slice();
-            if( y < gap[0] + 2 ){
-                if( gap[0] > 0 ){
-                    gap[0]-=3;
-                    gap[1]-=3;
-                }
-                if( gap[0] < 0 ){
-                    gap[1] -= gap[0];
-                    gap[0] = 0;
-                }
-                !this.animation && this.animateScroll();
-            }else if( y > gap[1] - 2 ){
-                if( gap[1] < this.controller.map.length ){
-                    gap[0]+=3;
-                    gap[1]+=3;
-                }
-                if( gap[1] >= this.controller.map.length ){
-                    gap[0] -= gap[1] - this.controller.map.length;
-                    gap[1] -= gap[1] - this.controller.map.length;
-                }
-                !this.animation && this.animateScroll();
-            }
-            if( !this.controller.scrolled && originalGap[0] === gap[0] ){
-                this.controller.scrolled = true;
-                this.controller.robbo.scrolled = true;
-                this.controller.fire('scrolled');
-            }
-
+            // Scrolling disabled - always show full level
+            this.controller.scrolled = true;
+            this.controller.robbo.scrolled = true;
+            this.controller.fire('scrolled');
         },
         animateScroll: function(  ){
             if(this.standalone)
@@ -273,27 +237,27 @@
             if(!x)return;
             this.legendCtx.fillStyle = this.lastColors[4];
             this.legendCtx.fillRect(
-                x*32+32,
-                16,
-                32,32
+                x*16+16,
+                8,
+                16,16
             );
             this.legendCtx.fillStyle = '#fff';
 
             sprites.draw(
                 this.legendCtx,
                 sprites.resolveSprite( {type: 'hud.digit.'+ (((value % 100)/10)|0) } ),
-                [ x*32+36, 16, cellSize/2, cellSize, cellSize/2 ]
+                [ x*16+18, 8, cellSize/2, cellSize, cellSize/2 ]
             );
             sprites.draw(
                 this.legendCtx,
                 sprites.resolveSprite( {type: 'hud.digit.'+ (value % 10) } ),
-                [ x*32+32+21, 16, cellSize/2, cellSize, cellSize/2 ]
+                [ x*16+16+10, 8, cellSize/2, cellSize, cellSize/2 ]
             );
 
             /*this.legendCtx.fillText(
                 value,
-                x*32+10,
-                40
+                x*16+5,
+                20
             );*/
         },
         updateHud: function(  ){
@@ -337,51 +301,40 @@
               this.canvasCtx = this.canvas.getContext('2d');
               return;
             }
+
+            // Use only the small preview canvas (edit mode view)
             this.canvas = document.createElement('canvas');
-            this.canvas.setAttribute('width', 32*16+'');
-            this.canvas.setAttribute('height', 32*31+'');
+            // Default size - will be resized when map loads
+            this.canvas.setAttribute('width', 16*16+'');
+            this.canvas.setAttribute('height', 16*31+'');
             this.canvas.style.background = '#eee';
             this.canvasCtx = this.canvas.getContext('2d');
 
-            this.canvasHolder = document.createElement('div');
-
             this.legend = document.createElement('canvas');
-            this.legend.setAttribute('width', 32*16+'');
-            this.legend.setAttribute('height', 32*2+'');
+            this.legend.setAttribute('width', 16*16+'');
+            this.legend.setAttribute('height', 16*2+'');
             this.legendCtx = this.legend.getContext('2d');
-
             this.legend.style.background = '#888';
 
-            this.canvasHolder.appendChild( this.canvas );
-            R.apply( this.canvasHolder.style, {
-                height: 32*10 + 4 + 'px',
-                width: 32*16 + 'px',
-                overflow: 'hidden',
-                position: 'relative'
-            });
             this.renderTo.innerHTML = '';
-            this.renderTo.style.padding = '48px 96px';
+            this.renderTo.style.padding = '20px';
             this.renderTo.style.display = 'inline-block';
-            this.renderTo.appendChild( this.canvasHolder );
+            this.renderTo.appendChild( this.canvas );
             this.renderTo.appendChild( this.legend );
+        },
+        resizeCanvas: function( width, height ){
+            if(this.standalone) return;
 
-            if( this.controller.editMode ){
-                this.mapCanvas = document.createElement('canvas');
-                this.mapCanvas.setAttribute('width', 16*16+'');
-                this.mapCanvas.setAttribute('height', 16*31+'');
-                this.mapCanvas.style.background = '#eee';
-                this.mapCanvasCtx = this.mapCanvas.getContext('2d');
-                R.apply( this.renderTo.style, {
-                    width: (32*16+32*8+4+96) + 'px',
-                    position: 'relative'
-                });
-                R.apply( this.mapCanvas.style, {
-                    left: 32*16 + 48+96 + 'px',
-                    top: 0,
-                    position: 'absolute'
-                });
-                this.renderTo.appendChild( this.mapCanvas );
-            }
+            var cellSize = this.cellSize;
+            this.canvas.setAttribute('width', width * cellSize + '');
+            this.canvas.setAttribute('height', height * cellSize + '');
+
+            // Also resize legend to match width
+            this.legend.setAttribute('width', width * cellSize + '');
+
+            // Redraw background
+            this.canvasCtx.fillStyle = this.bgColor || '#000';
+            this.canvasCtx.fillRect(0, 0, width * cellSize, height * cellSize);
         },
         redraw: function( obj ){
             var x = obj.x,
@@ -413,28 +366,6 @@
                     cellSize
                 ]
             );
-            if( this.controller.editMode ){
-                this.sprites.draw(
-                    this.mapCanvasCtx,
-                    sprite,
-                    [
-                        obj.x * cellSize/2,
-                        obj.y * cellSize/2,
-                        cellSize/2,
-                        cellSize/2
-                    ]
-                );
-                if( obj.is('Teleport') ){
-                    var ctx = this.mapCanvasCtx;
-                    ctx.strokeStyle = '#ff0';
-                    ctx.strokeWidth = 0.5;
-                    ctx.beginPath();
-                    ctx.moveTo((obj.x+0.5) * cellSize/2,(obj.y+0.5) * cellSize/2);
-                    ctx.lineTo((obj.teleportX+0.5) * cellSize/2,(obj.teleportY+0.5) * cellSize/2);
-                    ctx.stroke();
-                }
-            }
-
         },
         drawObject: function( obj ){
             if( obj === false )return;
@@ -478,13 +409,9 @@
             this.blink--;
             if( this.blink > 1 ) {
               this.canvasCtx.fillStyle = '#ffffff';
-              if( this.controller.editMode )
-                this.mapCanvasCtx.fillStyle = '#ffffff';
             }
             this.fullRedraw();
             this.canvasCtx.fillStyle = this.bgColor;
-            if( this.controller.editMode )
-              this.mapCanvasCtx.fillStyle = this.bgColor;
           } else {
             this.controller.actionObjects.forEach( drawObject );
 

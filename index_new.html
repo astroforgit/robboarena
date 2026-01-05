@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Robbo - Main Menu</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: #fff;
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(106, 170, 255, 0.5);
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .menu-item {
+            background: rgba(37, 37, 37, 0.8);
+            border: 2px solid #444;
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            border-color: #6af;
+            background: rgba(42, 90, 138, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(106, 170, 255, 0.3);
+        }
+        .menu-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .menu-title {
+            font-size: 20px;
+            color: #6af;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .menu-desc {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .info-section {
+            background: rgba(37, 37, 37, 0.6);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .info-section h2 {
+            color: #6af;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-section li {
+            padding: 8px 0;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 13px;
+        }
+        .info-section li:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            background: #2a5a8a;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 ROBBO</h1>
+        <div class="subtitle">Classic Puzzle Platformer - Enhanced Edition</div>
+        
+        <div class="menu-grid">
+            <a href="game.html" class="menu-item">
+                <div class="menu-icon">🎯</div>
+                <div class="menu-title">Play Game</div>
+                <div class="menu-desc">Start from Level 1 and play through all 59 levels</div>
+            </a>
+            
+            <a href="game.html#level=0" class="menu-item">
+                <div class="menu-icon">🏟️</div>
+                <div class="menu-title">Arena Map <span class="badge">NEW</span></div>
+                <div class="menu-desc">Play the 3× wider arena map (48×31 cells)</div>
+            </a>
+            
+            <a href="editor.html" class="menu-item">
+                <div class="menu-icon">🎨</div>
+                <div class="menu-title">Level Editor <span class="badge">NEW</span></div>
+                <div class="menu-desc">Create and edit custom levels with visual editor</div>
+            </a>
+            
+            <a href="test_arena.html" class="menu-item">
+                <div class="menu-icon">📊</div>
+                <div class="menu-title">Info & Tests</div>
+                <div class="menu-desc">Technical details and test links</div>
+            </a>
+
+            <a href="docs.html" class="menu-item">
+                <div class="menu-icon">📚</div>
+                <div class="menu-title">Documentation</div>
+                <div class="menu-desc">Guides, tutorials, and complete documentation</div>
+            </a>
+        </div>
+        
+        <div class="info-section">
+            <h2>✨ Recent Updates</h2>
+            <ul>
+                <li>✅ <strong>Level Editor</strong> - Full-featured visual editor for creating maps</li>
+                <li>✅ <strong>Arena Map</strong> - New 48×31 map combining levels 1, 2, and 3</li>
+                <li>✅ <strong>Dynamic Canvas</strong> - Support for any map size (8×8 to 100×100)</li>
+                <li>✅ <strong>Compact View</strong> - 16px cell size for full map visibility</li>
+                <li>✅ <strong>59 Levels</strong> - All original levels plus arena map</li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h2>🎮 How to Play</h2>
+            <ul>
+                <li><strong>Arrow Keys</strong> - Move Robbo</li>
+                <li><strong>X</strong> - Shoot</li>
+                <li><strong>ESC</strong> - Pause</li>
+                <li><strong>Goal</strong> - Collect all screws and reach the spaceship!</li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h2>🛠️ Editor Features</h2>
+            <ul>
+                <li>Visual tile-based editing with 25 game objects</li>
+                <li>Multiple tools: Draw, Erase, Fill, Pick</li>
+                <li>Import/Export level data</li>
+                <li>Load and edit existing levels (0-59)</li>
+                <li>Test levels instantly</li>
+                <li>Support for any map size</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

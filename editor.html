@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Robbo Level Editor</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        .sidebar {
+            background: #252525;
+            padding: 15px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        .main-area {
+            background: #252525;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        h2 {
+            color: #6af;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        .tile-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #444;
+            background: #333;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .tile-btn:hover {
+            border-color: #6af;
+            transform: scale(1.1);
+        }
+        .tile-btn.selected {
+            border-color: #0f0;
+            background: #2a4a2a;
+        }
+        .tile-info {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 2px;
+            color: #888;
+        }
+        canvas {
+            border: 2px solid #444;
+            background: #000;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            cursor: crosshair;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        button, input, select {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #444;
+            border-color: #6af;
+        }
+        button.primary {
+            background: #2a5a8a;
+            border-color: #6af;
+        }
+        button.primary:hover {
+            background: #3a6a9a;
+        }
+        input[type="number"] {
+            width: 80px;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: #1a1a1a;
+            color: #0f0;
+            border: 1px solid #555;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+        .info-box {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .grid-info {
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #6af;
+        }
+        .tool-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .tool-btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+        }
+        .tool-btn.active {
+            background: #2a5a8a;
+            border-color: #6af;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Robbo Level Editor</h1>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="section">
+                <h2>🎨 Tile Palette</h2>
+                <div class="palette" id="palette"></div>
+            </div>
+
+            <div class="section">
+                <h2>🛠️ Tools</h2>
+                <div class="tool-group">
+                    <button class="tool-btn active" data-tool="draw">✏️ Draw</button>
+                    <button class="tool-btn" data-tool="erase">🧹 Erase</button>
+                </div>
+                <div class="tool-group">
+                    <button class="tool-btn" data-tool="fill">🪣 Fill</button>
+                    <button class="tool-btn" data-tool="pick">🎯 Pick</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📐 Map Size</h2>
+                <label>
+                    Width: <input type="number" id="mapWidth" value="16" min="8" max="100">
+                </label>
+                <label>
+                    Height: <input type="number" id="mapHeight" value="31" min="8" max="100">
+                </label>
+                <button onclick="resizeMap()" style="margin-top: 10px; width: 100%;">Resize Map</button>
+            </div>
+
+            <div class="section">
+                <h2>🎨 Colors</h2>
+                <label>
+                    Color Scheme:
+                    <select id="colorScheme">
+                        <option value="21670E,989898,A27240,1C2783,101010">Default</option>
+                        <option value="00404F,A5F4CA,66B58B,484848,101010">Cyan</option>
+                        <option value="484848,87C8D7,515CB8,074D00,101010">Blue</option>
+                        <option value="996600,FFCC99,CC9966,663300,101010">Brown</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="controls">
+                <button class="primary" onclick="newMap()">📄 New Map</button>
+                <button onclick="clearMap()">🗑️ Clear</button>
+                <button class="primary" onclick="exportMap()">💾 Export</button>
+                <button onclick="importMap()">📥 Import</button>
+                <button onclick="loadLevel()">📂 Load Level</button>
+                <button onclick="testMap()">▶️ Test</button>
+            </div>
+
+            <div class="grid-info" id="gridInfo">Map: 16 × 31 | Cell Size: 16px | Mouse: -</div>
+
+            <div style="overflow: auto; max-height: calc(100vh - 200px);">
+                <canvas id="editor" width="256" height="496"></canvas>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Tips:</strong>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Click tiles to place them on the map</li>
+                    <li>Use tools for faster editing (Fill, Pick, etc.)</li>
+                    <li>Export creates level data you can copy to js/levels.js</li>
+                    <li>Test opens the map in the game</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000;">
+        <div style="background:#252525; max-width:800px; margin:50px auto; padding:30px; border-radius:8px; max-height:80vh; overflow:auto;">
+            <h2 style="color:#6af; margin-bottom:15px;">📤 Export Level Data</h2>
+            <textarea id="exportData" readonly></textarea>
+            <div style="margin-top:15px; display:flex; gap:10px;">
+                <button class="primary" onclick="copyExport()">📋 Copy to Clipboard</button>
+                <button onclick="closeExport()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000;">
+        <div style="background:#252525; max-width:800px; margin:50px auto; padding:30px; border-radius:8px; max-height:80vh; overflow:auto;">
+            <h2 style="color:#6af; margin-bottom:15px;">📥 Import Level Data</h2>
+            <p style="margin-bottom:10px; font-size:12px;">Paste level data (from [data] to [additional]):</p>
+            <textarea id="importData" placeholder="Paste level data here..."></textarea>
+            <div style="margin-top:15px; display:flex; gap:10px;">
+                <button class="primary" onclick="doImport()">Import</button>
+                <button onclick="closeImport()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Level Modal -->
+    <div id="loadModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:1000;">
+        <div style="background:#252525; max-width:600px; margin:50px auto; padding:30px; border-radius:8px;">
+            <h2 style="color:#6af; margin-bottom:15px;">📂 Load Existing Level</h2>
+            <label style="display:block; margin-bottom:15px;">
+                Level Number (0-59):
+                <input type="number" id="levelNumber" value="1" min="0" max="59" style="width:100px; margin-left:10px;">
+            </label>
+            <div style="display:flex; gap:10px;">
+                <button class="primary" onclick="doLoadLevel()">Load</button>
+                <button onclick="closeLoad()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/shim.js"></script>
+    <script src="js/base.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/ascii.js"></script>
+    <script src="js/parseMaps.js"></script>
+    <script src="js/levels.js"></script>
+    <script>
+        // Tile definitions with ASCII characters
+        const tiles = [
+            { char: '.', name: 'Empty', color: '#000' },
+            { char: 'R', name: 'Robbo', color: '#ff0' },
+            { char: 'Q', name: 'Wall', color: '#888' },
+            { char: 'O', name: 'Wall2', color: '#999' },
+            { char: 'I', name: 'Wall3', color: '#777' },
+            { char: '-', name: 'Wall4', color: '#666' },
+            { char: '#', name: 'Stone', color: '#aaa' },
+            { char: '~', name: 'PushStone', color: '#bbb' },
+            { char: 'H', name: 'Ground', color: '#964' },
+            { char: 'D', name: 'Door', color: '#840' },
+            { char: '%', name: 'Key', color: '#fa0' },
+            { char: 'T', name: 'Screw', color: '#0af' },
+            { char: 'x', name: 'Screw2', color: '#0bf' },
+            { char: "'", name: 'Ammo', color: '#f00' },
+            { char: '!', name: 'Ship', color: '#0f0' },
+            { char: '?', name: 'Question', color: '#f0f' },
+            { char: 'b', name: 'Bomb', color: '#f80' },
+            { char: '&', name: 'Teleport', color: '#0ff' },
+            { char: '}', name: 'Gun', color: '#f44' },
+            { char: '^', name: 'Bird', color: '#ff0' },
+            { char: 'V', name: 'Butterfly', color: '#f9f' },
+            { char: '@', name: 'Bear', color: '#a50' },
+            { char: '*', name: 'Bear2', color: '#a60' },
+            { char: '=', name: 'Lava', color: '#f40' },
+            { char: 'M', name: 'Magnet', color: '#c0c' },
+        ];
+
+        // Editor state
+        let mapWidth = 16;
+        let mapHeight = 31;
+        let cellSize = 16;
+        let map = [];
+        let selectedTile = '.';
+        let currentTool = 'draw';
+        let isDrawing = false;
+
+        const canvas = document.getElementById('editor');
+        const ctx = canvas.getContext('2d');
+
+        // Initialize
+        function init() {
+            createPalette();
+            initMap();
+            setupTools();
+            render();
+            setupCanvas();
+        }
+
+        function createPalette() {
+            const palette = document.getElementById('palette');
+            tiles.forEach(tile => {
+                const btn = document.createElement('div');
+                btn.className = 'tile-btn';
+                if (tile.char === '.') btn.classList.add('selected');
+                btn.style.background = tile.color;
+                btn.style.color = tile.color === '#000' ? '#fff' : '#000';
+                btn.textContent = tile.char === '.' ? '·' : tile.char;
+                btn.title = tile.name;
+                btn.onclick = () => selectTile(tile.char, btn);
+
+                const container = document.createElement('div');
+                container.appendChild(btn);
+                const info = document.createElement('div');
+                info.className = 'tile-info';
+                info.textContent = tile.name;
+                container.appendChild(info);
+                palette.appendChild(container);
+            });
+        }
+
+        function selectTile(char, btn) {
+            selectedTile = char;
+            document.querySelectorAll('.tile-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function setupTools() {
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentTool = btn.dataset.tool;
+                    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+            });
+        }
+
+        function initMap() {
+            map = [];
+            for (let y = 0; y < mapHeight; y++) {
+                map[y] = [];
+                for (let x = 0; x < mapWidth; x++) {
+                    map[y][x] = '.';
+                }
+            }
+            updateCanvas();
+        }
+
+        function updateCanvas() {
+            canvas.width = mapWidth * cellSize;
+            canvas.height = mapHeight * cellSize;
+            document.getElementById('gridInfo').textContent =
+                `Map: ${mapWidth} × ${mapHeight} | Cell Size: ${cellSize}px | Mouse: -`;
+        }
+
+        function setupCanvas() {
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                handleCanvasClick(e);
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) / cellSize);
+                const y = Math.floor((e.clientY - rect.top) / cellSize);
+                document.getElementById('gridInfo').textContent =
+                    `Map: ${mapWidth} × ${mapHeight} | Cell Size: ${cellSize}px | Mouse: ${x},${y}`;
+
+                if (isDrawing && currentTool === 'draw') {
+                    handleCanvasClick(e);
+                }
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                isDrawing = false;
+            });
+        }
+
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+            if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) return;
+
+            switch(currentTool) {
+                case 'draw':
+                    map[y][x] = selectedTile;
+                    break;
+                case 'erase':
+                    map[y][x] = '.';
+                    break;
+                case 'pick':
+                    const pickedChar = map[y][x];
+                    const tileBtn = Array.from(document.querySelectorAll('.tile-btn'))
+                        .find(btn => btn.textContent === (pickedChar === '.' ? '·' : pickedChar));
+                    if (tileBtn) {
+                        selectTile(pickedChar, tileBtn);
+                    }
+                    break;
+                case 'fill':
+                    floodFill(x, y, map[y][x], selectedTile);
+                    break;
+            }
+
+            render();
+        }
+
+        function floodFill(x, y, targetChar, replacementChar) {
+            if (targetChar === replacementChar) return;
+            if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) return;
+            if (map[y][x] !== targetChar) return;
+
+            map[y][x] = replacementChar;
+            floodFill(x + 1, y, targetChar, replacementChar);
+            floodFill(x - 1, y, targetChar, replacementChar);
+            floodFill(x, y + 1, targetChar, replacementChar);
+            floodFill(x, y - 1, targetChar, replacementChar);
+        }
+
+        function render() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let y = 0; y < mapHeight; y++) {
+                for (let x = 0; x < mapWidth; x++) {
+                    const char = map[y][x];
+                    const tile = tiles.find(t => t.char === char) || tiles[0];
+
+                    // Draw tile background
+                    ctx.fillStyle = tile.color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+                    // Draw character
+                    ctx.fillStyle = tile.color === '#000' ? '#333' : '#000';
+                    ctx.font = `${cellSize - 4}px monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(
+                        char === '.' ? '·' : char,
+                        x * cellSize + cellSize / 2,
+                        y * cellSize + cellSize / 2
+                    );
+                }
+            }
+
+            // Draw grid
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= mapWidth; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * cellSize, 0);
+                ctx.lineTo(x * cellSize, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= mapHeight; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * cellSize);
+                ctx.lineTo(canvas.width, y * cellSize);
+                ctx.stroke();
+            }
+        }
+
+        function newMap() {
+            if (confirm('Create a new map? Current map will be lost.')) {
+                initMap();
+                render();
+            }
+        }
+
+        function clearMap() {
+            if (confirm('Clear the entire map?')) {
+                initMap();
+                render();
+            }
+        }
+
+        function resizeMap() {
+            const newWidth = parseInt(document.getElementById('mapWidth').value);
+            const newHeight = parseInt(document.getElementById('mapHeight').value);
+
+            if (newWidth < 8 || newWidth > 100 || newHeight < 8 || newHeight > 100) {
+                alert('Map size must be between 8 and 100');
+                return;
+            }
+
+            const oldMap = map;
+            mapWidth = newWidth;
+            mapHeight = newHeight;
+
+            map = [];
+            for (let y = 0; y < mapHeight; y++) {
+                map[y] = [];
+                for (let x = 0; x < mapWidth; x++) {
+                    map[y][x] = (oldMap[y] && oldMap[y][x]) || '.';
+                }
+            }
+
+            updateCanvas();
+            render();
+        }
+
+        function exportMap() {
+            const mapData = map.map(row => row.join('')).join('\n');
+            const colorScheme = document.getElementById('colorScheme').value;
+
+            const levelData = `    [level]
+    NEW_LEVEL
+    [colour]
+    ${colorScheme}
+    [size]
+    ${mapWidth}.${mapHeight}
+    [author]
+    Your Name
+    [level_notes]
+    Created with Robbo Level Editor
+    [data]
+${mapData}
+    [additional]
+    0
+    [end]`;
+
+            document.getElementById('exportData').value = levelData;
+            document.getElementById('exportModal').style.display = 'block';
+        }
+
+        function copyExport() {
+            const textarea = document.getElementById('exportData');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Level data copied to clipboard!');
+        }
+
+        function closeExport() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        function importMap() {
+            document.getElementById('importModal').style.display = 'block';
+        }
+
+        function doImport() {
+            const data = document.getElementById('importData').value;
+
+            try {
+                // Extract map data between [data] and [additional]
+                const dataMatch = data.match(/\[data\]([\s\S]*?)\[additional\]/);
+                if (!dataMatch) {
+                    alert('Invalid level data format');
+                    return;
+                }
+
+                const mapLines = dataMatch[1].trim().split('\n').map(line => line.trim()).filter(line => line);
+
+                if (mapLines.length === 0) {
+                    alert('No map data found');
+                    return;
+                }
+
+                mapHeight = mapLines.length;
+                mapWidth = Math.max(...mapLines.map(line => line.length));
+
+                document.getElementById('mapWidth').value = mapWidth;
+                document.getElementById('mapHeight').value = mapHeight;
+
+                map = [];
+                for (let y = 0; y < mapHeight; y++) {
+                    map[y] = [];
+                    const line = mapLines[y] || '';
+                    for (let x = 0; x < mapWidth; x++) {
+                        map[y][x] = line[x] || '.';
+                    }
+                }
+
+                updateCanvas();
+                render();
+                closeImport();
+                alert('Map imported successfully!');
+            } catch (e) {
+                alert('Error importing map: ' + e.message);
+            }
+        }
+
+        function closeImport() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('importData').value = '';
+        }
+
+        function loadLevel() {
+            document.getElementById('loadModal').style.display = 'block';
+        }
+
+        function doLoadLevel() {
+            const levelNum = parseInt(document.getElementById('levelNumber').value);
+
+            if (levelNum < 0 || levelNum > 59) {
+                alert('Level number must be between 0 and 59');
+                return;
+            }
+
+            try {
+                const maps = R.parseMaps(R.levelsData);
+                const level = maps[levelNum];
+
+                if (!level) {
+                    alert('Level not found');
+                    return;
+                }
+
+                const mapLines = level.map.split('\n').filter(line => line);
+
+                mapHeight = mapLines.length;
+                mapWidth = Math.max(...mapLines.map(line => line.length));
+
+                document.getElementById('mapWidth').value = mapWidth;
+                document.getElementById('mapHeight').value = mapHeight;
+
+                map = [];
+                for (let y = 0; y < mapHeight; y++) {
+                    map[y] = [];
+                    const line = mapLines[y] || '';
+                    for (let x = 0; x < mapWidth; x++) {
+                        map[y][x] = line[x] || '.';
+                    }
+                }
+
+                // Set color scheme if available
+                if (level.colour && level.colour[0]) {
+                    document.getElementById('colorScheme').value = level.colour[0];
+                }
+
+                updateCanvas();
+                render();
+                closeLoad();
+                alert(`Level ${levelNum} loaded successfully!`);
+            } catch (e) {
+                alert('Error loading level: ' + e.message);
+            }
+        }
+
+        function closeLoad() {
+            document.getElementById('loadModal').style.display = 'none';
+        }
+
+        function testMap() {
+            // Save map to localStorage
+            const mapData = map.map(row => row.join('')).join('\n');
+            const colorScheme = document.getElementById('colorScheme').value;
+
+            const testLevel = {
+                map: mapData,
+                colour: [colorScheme],
+                data: []
+            };
+
+            localStorage.setItem('robbo_test_level', JSON.stringify(testLevel));
+
+            // Open test page
+            window.open('test_editor.html', '_blank');
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
+

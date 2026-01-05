@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Robbo - Documentation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #6af;
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        .section {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #6af;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .doc-link {
+            display: block;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        .doc-link:hover {
+            border-color: #6af;
+            background: #2a3a4a;
+            transform: translateX(5px);
+        }
+        .doc-title {
+            color: #6af;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .doc-desc {
+            color: #999;
+            font-size: 13px;
+        }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nav-links a {
+            display: inline-block;
+            background: #2a5a8a;
+            color: #fff;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover {
+            background: #3a6a9a;
+            transform: translateY(-2px);
+        }
+        .badge {
+            background: #2a5a8a;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        code {
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Robbo Documentation</h1>
+        <div class="subtitle">Everything you need to know about the Robbo Level Editor</div>
+        
+        <div class="nav-links">
+            <a href="index_new.html">🏠 Main Menu</a>
+            <a href="editor.html">🎨 Open Editor</a>
+            <a href="game.html">🎮 Play Game</a>
+        </div>
+        
+        <div class="section">
+            <h2>🚀 Getting Started</h2>
+            
+            <a href="QUICK_START.md" class="doc-link" download>
+                <div class="doc-title">📖 Quick Start Guide <span class="badge">START HERE</span></div>
+                <div class="doc-desc">
+                    Step-by-step guide to creating your first level in 5 minutes.
+                    Includes visual layout, tool guide, and example levels.
+                </div>
+            </a>
+            
+            <a href="EDITOR_SUMMARY.md" class="doc-link" download>
+                <div class="doc-title">📋 Editor Summary</div>
+                <div class="doc-desc">
+                    Quick overview of all features, common tasks, and troubleshooting.
+                    Perfect for quick reference.
+                </div>
+            </a>
+        </div>
+        
+        <div class="section">
+            <h2>📖 Complete Documentation</h2>
+            
+            <a href="EDITOR_README.md" class="doc-link" download>
+                <div class="doc-title">📚 Full Editor Documentation</div>
+                <div class="doc-desc">
+                    Complete guide covering all features, tools, tiles, workflows, and tips.
+                    Everything you need to become a level design master!
+                </div>
+            </a>
+        </div>
+        
+        <div class="section">
+            <h2>🎮 Interactive Resources</h2>
+            
+            <a href="editor.html" class="doc-link">
+                <div class="doc-title">🎨 Level Editor <span class="badge">NEW</span></div>
+                <div class="doc-desc">
+                    Open the visual level editor. Create and edit maps of any size (8×8 to 100×100).
+                    Includes all 25 game objects and 4 editing tools.
+                </div>
+            </a>
+            
+            <a href="test_arena.html" class="doc-link">
+                <div class="doc-title">📊 Arena Info & Tests</div>
+                <div class="doc-desc">
+                    Technical details about the arena map system and test links.
+                    See how the 48×31 arena map was created.
+                </div>
+            </a>
+            
+            <a href="game.html" class="doc-link">
+                <div class="doc-title">🎯 Play Game</div>
+                <div class="doc-desc">
+                    Play the original Robbo game with all 59 levels.
+                    Test your custom levels here!
+                </div>
+            </a>
+        </div>
+        
+        <div class="section">
+            <h2>⚡ Quick Reference</h2>
+            
+            <div style="background: #2a2a2a; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <div style="color: #6af; margin-bottom: 10px; font-weight: bold;">Start Local Server:</div>
+                <code>python3 -m http.server 8080</code>
+                <div style="margin-top: 10px; color: #888; font-size: 12px;">
+                    Then open: <code>http://localhost:8080/editor.html</code>
+                </div>
+            </div>
+            
+            <div style="background: #2a2a2a; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <div style="color: #6af; margin-bottom: 10px; font-weight: bold;">Game Controls:</div>
+                <div style="font-size: 13px;">
+                    <strong>Arrow Keys</strong> - Move Robbo<br>
+                    <strong>X</strong> - Shoot<br>
+                    <strong>ESC</strong> - Pause
+                </div>
+            </div>
+            
+            <div style="background: #2a2a2a; padding: 15px; border-radius: 6px;">
+                <div style="color: #6af; margin-bottom: 10px; font-weight: bold;">Editor Tools:</div>
+                <div style="font-size: 13px;">
+                    <strong>✏️ Draw</strong> - Place tiles<br>
+                    <strong>🧹 Erase</strong> - Remove tiles<br>
+                    <strong>🪣 Fill</strong> - Flood fill areas<br>
+                    <strong>🎯 Pick</strong> - Copy tiles from map
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>✨ What's New</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid #2a2a2a;">
+                    ✅ <strong>Level Editor</strong> - Full-featured visual editor
+                </li>
+                <li style="padding: 8px 0; border-bottom: 1px solid #2a2a2a;">
+                    ✅ <strong>Arena Map</strong> - New 48×31 map (Level 0)
+                </li>
+                <li style="padding: 8px 0; border-bottom: 1px solid #2a2a2a;">
+                    ✅ <strong>Dynamic Canvas</strong> - Support for any map size
+                </li>
+                <li style="padding: 8px 0; border-bottom: 1px solid #2a2a2a;">
+                    ✅ <strong>Import/Export</strong> - Load and save level data
+                </li>
+                <li style="padding: 8px 0;">
+                    ✅ <strong>Test Mode</strong> - Play your levels instantly
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

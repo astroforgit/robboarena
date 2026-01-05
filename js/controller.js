@@ -99,6 +99,19 @@
             this.levelLoaded = true;
             this.view.screw = this.screw;
             this.view.planet = this._currentLevel;
+
+            // Calculate map dimensions
+            var mapHeight = this.map.length;
+            var mapWidth = 0;
+            for(var i = 0; i < mapHeight; i++){
+                if(this.map[i] && this.map[i].length > mapWidth){
+                    mapWidth = this.map[i].length;
+                }
+            }
+
+            // Resize canvas to fit the map
+            this.view.resizeCanvas(mapWidth, mapHeight);
+
             var colors = cfg.colour || ['cccccc,A5F4CA,66B58B,484848,101010'];
             this.currentColors = colors[0];
             this.view.set('mapColors',
@@ -238,7 +251,7 @@
             obj.drawOnCreate !== false && this.view.redraw( obj );
             return obj;
         },
-        editMode: false,
+        editMode: true,
         soundCache: {},
         playSound: function( name ){
             // Audio element download sound each time when we create it.
