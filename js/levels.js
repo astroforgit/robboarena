@@ -21,48 +21,48 @@
     *THIS SET IS COMPLETE NOW*
     back,light,shadow,blick,black
 
-         [level]
+           [level]
     NEW_LEVEL
     [colour]
     21670E,989898,A27240,1C2783,101010
     [size]
-    49.31
+    51.31
     [author]
     Your Name
     [level_notes]
     Created with Robbo Level Editor
     [data]
-QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
-Q....Q...Q.Q...QQ%..#...Q......QQ....Q..........Q
-Q...'Q.&.Q.Q.&.QQ..#....Q..Q.?....R..D....Q#....Q
-Q........Q.Q...Q}.....#.HH#H...QQ....Q....##...QQ
-QQ.QQQ.#...Q.Q....#.....QQ.Q...QQ....Q....Q#...QQ
-Q....Q.QQQQQ.Q.QQQQQQQQQQQQQQDQQQQQ.QQQQQQQQQQQQQ
-Q...#Q..Q..H.Q.QQ...#.#.........Q....Q....Q....QQ
-Q#QQQQ.#Q..H.Q..Q.#....#..#.....Q.b.......Q..?..Q
-Q...#QQ.Q..H.Q..Q..#.....#.....QQ.......&.Q.....Q
-Q....Q..Q..QQQ.QQHHH#...QQQQQQQQQ#...Q....Q.....Q
-QQQQ.Q..Q...Q}..Q.#..####...#..QQQQQ.Q.QQQQQ.QQQQ
-Q....QQQQQQ.Q..Q...........#.#.QQ....Q.Q..Q...#QQ
-Q.b..Q....D.Q..Q...@...Q...Q....Q....Q.Q....&..QQ
-Q....Q.#..QQQ..QQ..QQQ...Q...QQ......Q.Q..Q.....Q
-Q....QQ.QQQ'......QQ.QQQQQQQ.....&..%Q....Q.....Q
-Q....Q....QQQ.QQQQ..Q...Q...QQQQQQQQQQQ...-QQQ.QQ
-Q#.b#Q...#.Q#.#QQ#...Q...Q.Q...Q.Q........Q.##.QQ
-Q#.##..##..Q...QQ#.Q^Q...Q.Q..#Q.QQQQQQQ..Q....QQ
-Q###....##QQ...Q..#QQQ....#.#..Q.....Q....Q#.#..Q
-Q%#.##.#..Q....Q...Q.Q...Q.Q...Q..Q.......Q..#..Q
-QQQQQQQQQQQ#QQ.QQQQQ.QQQQQ...QQQQQQQQ.QQQQQ.QQQQQ
-Q...Q.....Q.%QDQQ..Q.Q...Q.Q...QQ.........Q.@..QQ
-}.........Q.QQ.QQ#.Q^Q...Q.Q..#QQQQ.QQQ.....QQ..Q
-Q...Q...#.........#QQQ....#.#..QQ.......!.Q.Q..QQ
-Q.?.Q#QQQQQ.Q.QQQ.QQ....#.QQ......Q.Q.....Q.QQ..Q
-Q.....Q....#...Q......Q...Q..#.QQ.Q...^...Q..Q..Q
-QQQQQ.QQQQQ.Q.QQQQ.QQQQQQQQ#...QQ.Q^QQQQQQQ.QQ..Q
-Q...Q.Q...Q.QQQQQ#.Q.Q.#QQQ.!..Q..Q.......Q.....Q
-Q.!.......Q......#.Q.Q..Q.QQQHQQ..Q.QQQ.'.QQQQ.QQ
-Q...Q.Q...Q....QQ....Q#..'Q....Q..........Q&...QQ
-QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Q....Q...Q.Q...QQ%..#...Q.TQ...QQ....Q..........Q.Q
+Q...'Q.&.Q.Q.&.QQ..#....Q..Q.?....R..D....Q#.T.Q..Q
+Q........Q.Q...Q}.....#.HH#H...QQ....Q.T..##...QQ.Q
+QQ.QQQ.#.....Q....#.....QQ.Q...QQ....Q....Q#...QQQQ
+Q....Q.QQQQQ.Q.QQQQQQQQQQQQQQDQQQQQ.QQQQQQQQQQQQQ.Q
+Q...#Q..Q..H.Q.QQ...#.#.........Q....Q....Q....QQ.Q
+Q#Q.QQT#Q..H.Q..Q.#....#..#.....Q.b.......Q..?....Q
+Q...#QQ.Q..H.Q..Q..#.....#.....QQ.......&.Q.....Q.Q
+Q....Q..Q..QQQ.QQHHH#...QQQQQQQQQ#...Q....Q.....Q.Q
+QQQQ.QT.Q...Q}..Q.#..####...#..QQQQQ.Q.QQQQQ.QQQQ.Q
+Q....QQQQQQ.Q..Q..T........#.#.QQ....Q.Q..Q...#...Q
+Q.b..Q....D.Q..QT..@...Q...Q....Q....Q.Q....&...QQQ
+Q....Q.#..QQQ..QQ..QQQ...Q...QQ......Q.Q..Q.....Q.Q
+Q....QQ.QQQ'......QQ.QQQQQQQ.....&..%Q....Q.......Q
+Q....Q....QQQ.QQQQ..Q...Q...QQQQQQQQQQQ...-QQQ.QQ.Q
+Q#.b#Q...#.Q#.#QQ#...Q...Q.Q...Q.Q........Q.##.QQQQ
+Q#.##..##..Q...QQ#.Q^Q...Q.Q..#Q.QQQQQQQ..Q.T..QQ.Q
+Q###....##QQ...Q..#QQQ....#.#.TQ.....Q....Q#.#....Q
+Q%#.##.#..Q....Q.....Q...Q.Q...Q..Q.......Q..#..Q.Q
+QQQQQQQQQQQ#QQ.QQQQQ.QQQQQ...QQQQQQQQ.QQQQQ.QQQQQ.Q
+Q...Q.....Q.%QDQQ..Q.Q...Q.Q.T.QQT........Q.@..QQQQ
+}.........Q.QQ.QQ#.Q^Q...Q.Q..#QQQQ.QQQ.....QQ....Q
+Q...Q...#.........#QQQ....#.#..QQ.......!.Q.Q..QQ.Q
+Q.?.Q#QQQQQ.Q.QQQ.QQ....#.QQT.....Q.Q.....Q.QQ..Q.Q
+Q.....QT...#...Q......Q...Q..#.QQ.Q...^...Q..Q..QQQ
+QQQQQ.QQQQQ.Q.QQQQ.QQQQQ.QQ#...QQ.Q^QQQQQQQ.QQ..Q.Q
+Q...Q.Q...Q.QQQQQ#.Q.Q.#.QQ.!..Q..Q.......Q.......Q
+Q.!...T...Q......#.Q.Q.Q..Q.QQQHQQ..Q.QQQ.'.QQ.Q.QQ
+Q...Q.Q...Q...TQQ....Q#..TQ....Q..........Q&...QQ.Q
+QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
     [additional]
     0
     [end]
