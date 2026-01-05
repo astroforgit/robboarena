@@ -3,24 +3,46 @@
     R.sprites = {
         offset: 2,
         cellSize: 8,
+        getKeyByValue: function(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        },
         draw: function( ctx, sprite, rect, blink ){
-
-
+            var ascii = null;
+            var objkey = this.getKeyByValue(this,sprite);
+            var ascichar = this.getKeyByValue(R.ascii,objkey) ||" ";
+            //debugger;
+            if (sprite.sascii) {
+                ascii = sprite.sascii;
+                sprite = sprite.scolor;
+            }
             var zoom = 1;
             rect[0]/=zoom;
             rect[1]/=zoom;
             rect[2]/=zoom;
             rect[3]/=zoom;
-
+           // debugger;
 			if( typeof sprite === 'number' ){
 				ctx.fillStyle = '#000';
 				ctx.fillRect.apply( ctx, rect );
 				ctx.fillStyle = '#fff';
 				ctx.fillText(sprite.toString(10),rect[0], rect[1]+10);
 			}else{
+
+                /*
+                ctx.fillStyle = '#000';
+                ctx.fillRect.apply( ctx, rect );
+                ctx.fillStyle = '#fff';
+                ctx.fillText(sprite,rect[0], rect[1]);
+                */
+
+                if(ascichar!==" ") sprite='#fff';
 				ctx.fillStyle = blink === '#fff' ? blink : sprite;
 				ctx.globalAlpha = 1;
 				ctx.fillRect.apply( ctx, rect );
+
+                ctx.fillStyle = '#000';
+                ctx.fillText.apply( ctx,[ascichar,rect[0]+10, rect[1]+15]);
+
 			}
 
         },
@@ -29,7 +51,12 @@
         },
         resolveSprite: function( obj, step, step2 ){
             var sprite = this[ obj.type ];
+            //debugger;
             sprite.ascii && ( sprite = sprite.ascii[ obj.ascii ] );
+            //obj.ascii && (sprite =   obj.ascii);
+            var spriteobj = {};
+                spriteobj.scolor = sprite;
+            obj.ascii && (spriteobj.sascii =   obj.ascii);
             return typeof sprite === 'function' ? sprite.call( obj, step, step2 ) : sprite;
         },
         getHash: function( sprite ){

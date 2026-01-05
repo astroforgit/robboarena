@@ -273,6 +273,7 @@
                 } );
 
             R.keyboard.get( 'R'.charCodeAt(0) ) && this.restart();
+            R.keyboard.get( 'escape' ) && this.restart();
             R.keyboard.get( 'K'.charCodeAt(0) ) && this.finishLevel();
 
 
@@ -507,7 +508,7 @@
 
             nextCall -= +new Date(); // calculate next frame time
 
-            
+
 
             setTimeout( this.mainLoop.bind(this), nextCall > 0 ? nextCall : 0 );
         },
