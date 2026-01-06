@@ -96,6 +96,64 @@
                 }*/
 
 
+            },
+            bazooka: function(  ){
+                // Bazooka behaves like a gun bullet but explodes like a bomb on impact
+                var cell = this.game.getCell( R.addDirection( this, this.direction ) );
+                if( cell.is( 'Empty' ) ){
+                    this.game.swap( this, cell );
+                    return true;
+                }else{
+                    // Hit something - explode like a bomb!
+                    this.game.removeActiveObject( this );
+                    this.game.playSound('bomb');
+
+                    // Use the same explosion pattern as a bomb
+                    // This creates the proper cascading explosion effect
+                    // Call the method on the bullet instance
+                    var bullet = this;
+                    bullet.bazookaExploding([
+                        5, 4, 5,
+                        4, 3, 4,
+                        5, 4, 5
+                    ]);
+
+                    return false;
+                }
+            }
+        },
+        bazookaExploding: function( explodingMatrix ){
+            // Same logic as Bomb.exploding
+            // 0 1 2
+            // 3 4 5
+            // 6 7 8
+            var x = this.x,
+                y = this.y,
+                i, j, b, a;
+
+            for( b = 0; b < 9; b++ ){
+                a = [2,1,0,5,4,3,8,7,6][b];
+                i = x - 1 + ( a % 3 );
+                j = y - 1 + ( ( a / 3 )|0 );
+
+                this.bazookaTryExplode( i, j, explodingMatrix[a] );
+            }
+        },
+        bazookaTryExplode: function( x, y, animation ){
+            // Same logic as Bomb.tryExplode
+            if( animation !== 0 ){
+                var cell = this.game.getCell( x, y );
+                if( cell ){
+                    if( cell.is('Explosion') ){
+                        cell.animation = Math.min( cell.animation + animation, 5 );
+                    }else if( cell.is('Empty') || cell.explodable || cell === this ){
+                        if( cell === this || !cell.explode || cell.explode(animation) !== false ){
+                            if( cell === this )
+                                this.game.removeActiveObject( this );
+                            this.game.setCell( x, y, 'Explosion', { after: { type: 'Empty' }, animation: animation});
+                        }
+                    }
+                }
             }
         },
         step: function(  ){

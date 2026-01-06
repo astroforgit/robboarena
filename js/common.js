@@ -82,6 +82,28 @@
             }else
                 return false;
         },
+        fireFlamethrower: function( direction ){
+            direction === void 0 && (direction = this.direction);
+            var cell = this.game.getCell( R.addDirection( this.x, this.y, direction ) );
+            if( cell.is( 'Empty' ) ){
+                this.game.setCell( cell, 'Bullet', { direction: direction, bulletType: 'antimatter' } );
+                return true;
+            }else if( cell.demolishable ){
+                R.behaviors.demolish( cell );
+            }else
+                return false;
+        },
+        fireBazooka: function( direction ){
+            direction === void 0 && (direction = this.direction);
+            var cell = this.game.getCell( R.addDirection( this.x, this.y, direction ) );
+            if( cell.is( 'Empty' ) ){
+                this.game.setCell( cell, 'Bullet', { direction: direction, bulletType: 'bazooka' } );
+                return true;
+            }else if( cell.demolishable ){
+                R.behaviors.demolish( cell );
+            }else
+                return false;
+        },
         rightHandMove: function( clockwise ){
             var cell,
                 add = clockwise ? 1 : -1, testDirection, i,

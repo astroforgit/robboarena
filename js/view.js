@@ -232,26 +232,28 @@
 
             var sprites = this.sprites;
 
-            var x = {screw: 1, ammo: 4, keys: 7, lives: 10, planet: 13}[name],
+            // Show ammo, flamethrower, bazooka, lives, keys, shield with 5-cell spacing
+            var x = {ammo: 1, flamethrower: 6, bazooka: 11, lives: 16, keys: 21, shield: 26}[name],
                 cellSize = this.cellSize;
             if(!x)return;
             this.legendCtx.fillStyle = this.lastColors[4];
             this.legendCtx.fillRect(
-                x*16+16,
+                x*cellSize+cellSize+4,
                 8,
-                16,16
+                cellSize*2,
+                cellSize
             );
             this.legendCtx.fillStyle = '#fff';
 
             sprites.draw(
                 this.legendCtx,
                 sprites.resolveSprite( {type: 'hud.digit.'+ (((value % 100)/10)|0) } ),
-                [ x*16+18, 8, cellSize/2, cellSize, cellSize/2 ]
+                [ x*cellSize+cellSize+6, 8, cellSize/2, cellSize, cellSize/2 ]
             );
             sprites.draw(
                 this.legendCtx,
                 sprites.resolveSprite( {type: 'hud.digit.'+ (value % 10) } ),
-                [ x*16+16+10, 8, cellSize/2, cellSize, cellSize/2 ]
+                [ x*cellSize+cellSize+14, 8, cellSize/2, cellSize, cellSize/2 ]
             );
 
             /*this.legendCtx.fillText(
@@ -267,16 +269,59 @@
             var sprites = this.sprites;
 
             var c = 1, cellSize = this.cellSize;
+            var weaponIndex = 1;
 
-            'screw,ammo,keys,lives,planet'.split(',').forEach(function( key ){
+            // Show ammo, flamethrower, bazooka, lives, keys, shield with more spacing
+            'ammo,flamethrower,bazooka,lives,keys,shield'.split(',').forEach(function( key ){
                 sprites.draw(
                     this.legendCtx,
                     sprites.resolveSprite( {type: 'hud.' + key } ),
                     [ cellSize*c, cellSize/2, cellSize, cellSize ]
                 );
-                c += 3;
+
+                // Draw weapon number (1, 2, 3) for weapons
+                if(weaponIndex <= 3){
+                    this.legendCtx.fillStyle = '#fff';
+                    this.legendCtx.font = '8px monospace';
+                    this.legendCtx.fillText(
+                        weaponIndex.toString(),
+                        cellSize*c - 6,
+                        cellSize/2 + 6
+                    );
+                    weaponIndex++;
+                }
+
+                c += 5; // Increased spacing to 5 cells (80 pixels) for better digit visibility
                 this.redrawHud( key, this[ key ] );
             }.bind(this) )
+
+            // Draw weapon selection indicator
+            this.drawWeaponIndicator();
+        },
+        drawWeaponIndicator: function(){
+            if(this.standalone || !this.controller.robbo)
+              return;
+
+            var currentWeapon = this.controller.robbo.currentWeapon;
+            var cellSize = this.cellSize;
+            var weaponPositions = {
+                1: 1,  // ammo/pistol
+                2: 6,  // flamethrower (1 + 5)
+                3: 11  // bazooka (1 + 5 + 5)
+            };
+
+            var x = weaponPositions[currentWeapon];
+            if(!x) return;
+
+            // Draw a colored border around the selected weapon
+            this.legendCtx.strokeStyle = '#ff0';
+            this.legendCtx.lineWidth = 2;
+            this.legendCtx.strokeRect(
+                cellSize*x - 2,
+                cellSize/2 - 2,
+                cellSize + 4,
+                cellSize + 4
+            );
         },
         attachEvents: function(  ){
             if(this.standalone)
@@ -348,8 +393,11 @@
             R.apply( this, {
                 screw: 0,
                 ammo: 0,
+                flamethrower: 0,
+                bazooka: 0,
                 keys: 0,
                 lives: 0,
+                shield: 0,
                 planet: 0
             })
         },

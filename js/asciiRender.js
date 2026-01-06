@@ -37,6 +37,7 @@
         },
 
         Robbo: '#cc6',
+        RobboBot: '#f66', // Red color for bots
         Empty: '#fff',
         Walls: '#fee',
         Ground: '#aaa',
@@ -68,6 +69,9 @@
 
         'hud.screw': '#ddf',
         'hud.ammo': '#ffd',
+        'hud.flamethrower': '#f80',
+        'hud.bazooka': '#f44',
+        'hud.shield': '#8df',
         'hud.keys': '#dfd',
         'hud.planet': '#dfd',
         'hud.lives': '#dfd'

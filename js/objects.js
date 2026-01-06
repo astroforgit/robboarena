@@ -6,6 +6,7 @@
     R.include([
             'Base',
             'Robbo',
+            'RobboBot',
             'Empty',
             'Walls',
             'Ground',

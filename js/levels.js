@@ -36,7 +36,7 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
 Q....Q...Q.Q...QQ%..#...Q.TQ...QQ....Q..........Q.Q
 Q...'Q.&.Q.Q.&.QQ..#....Q..Q.?....R..D....Q#.T.Q..Q
 Q........Q.Q...Q}.....#.HH#H...QQ....Q.T..##...QQ.Q
-QQ.QQQ.#.....Q....#.....QQ.Q...QQ....Q....Q#...QQQQ
+QQ.QQQ.#...B.Q....#.....QQ.Q...QQ....Q....Q#...QQQQ
 Q....Q.QQQQQ.Q.QQQQQQQQQQQQQQDQQQQQ.QQQQQQQQQQQQQ.Q
 Q...#Q..Q..H.Q.QQ...#.#.........Q....Q....Q....QQ.Q
 Q#Q.QQT#Q..H.Q..Q.#....#..#.....Q.b.......Q..?....Q
@@ -45,7 +45,7 @@ Q....Q..Q..QQQ.QQHHH#...QQQQQQQQQ#...Q....Q.....Q.Q
 QQQQ.QT.Q...Q}..Q.#..####...#..QQQQQ.Q.QQQQQ.QQQQ.Q
 Q....QQQQQQ.Q..Q..T........#.#.QQ....Q.Q..Q...#...Q
 Q.b..Q....D.Q..QT..@...Q...Q....Q....Q.Q....&...QQQ
-Q....Q.#..QQQ..QQ..QQQ...Q...QQ......Q.Q..Q.....Q.Q
+Q....Q.#..QQQ..QQ..QQQ...Q...QQ....B.Q.Q..Q.....Q.Q
 Q....QQ.QQQ'......QQ.QQQQQQQ.....&..%Q....Q.......Q
 Q....Q....QQQ.QQQQ..Q...Q...QQQQQQQQQQQ...-QQQ.QQ.Q
 Q#.b#Q...#.Q#.#QQ#...Q...Q.Q...Q.Q........Q.##.QQQQ

@@ -4,6 +4,7 @@
 
         map = R.asciiHash = {
             Robbo: 'R',
+            RobboBot: 'B',
             Empty: '. ',
             Walls: 'OIo-QqPpSsyYzJjZi',
             Ground: 'H',

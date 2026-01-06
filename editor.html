@@ -64,6 +64,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            position: relative;
         }
         .tile-btn:hover {
             border-color: #6af;
@@ -72,6 +73,30 @@
         .tile-btn.selected {
             border-color: #0f0;
             background: #2a4a2a;
+        }
+        .sprite-tooltip {
+            position: fixed;
+            background: #1a1a1a;
+            border: 2px solid #6af;
+            border-radius: 4px;
+            padding: 8px;
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .sprite-tooltip canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            border: 1px solid #444;
+        }
+        .sprite-tooltip .tooltip-name {
+            text-align: center;
+            margin-top: 5px;
+            color: #6af;
+            font-size: 11px;
+            font-weight: bold;
         }
         .tile-info {
             font-size: 10px;
@@ -163,6 +188,12 @@
 <body>
     <h1>🎮 Robbo Level Editor</h1>
     
+    <!-- Sprite Tooltip -->
+    <div class="sprite-tooltip" id="spriteTooltip">
+        <canvas id="tooltipCanvas" width="64" height="64"></canvas>
+        <div class="tooltip-name" id="tooltipName"></div>
+    </div>
+
     <div class="container">
         <div class="sidebar">
             <div class="section">
@@ -281,7 +312,40 @@
     <script src="js/ascii.js"></script>
     <script src="js/parseMaps.js"></script>
     <script src="js/levels.js"></script>
+    <script src="js/sprites.js"></script>
     <script>
+        // Load sprite sheet
+        const spriteSheet = new Image();
+        spriteSheet.src = 'icons32.png';
+
+        // Sprite coordinates mapping (from js/sprites.js)
+        const spriteCoords = {
+            'Empty': [10, 2],
+            'Robbo': [0, 5],
+            'Wall': [2, 0],
+            'Wall2': [2, 0],
+            'Wall3': [7, 6],
+            'Wall4': [7, 1],
+            'Stone': [6, 0],
+            'PushStone': [8, 1],
+            'Ground': [4, 2],
+            'Door': [9, 0],
+            'Spaceship': [5, 1],
+            'Question': [0, 1],
+            'Bomb': [8, 0],
+            'Key': [7, 0],
+            'Screw': [4, 0],
+            'Ammo': [5, 0],
+            'Teleport': [0, 4],
+            'Mustache': [3, 1],
+            'Butterfly': [8, 2],
+            'Bear': [1, 1],
+            'Lava': [9, 3],
+            'Magnet': [0, 0],
+            'Turrel': [5, 4],
+            'RobboBot': [0, 5]
+        };
+
         // Tile definitions with ASCII characters
         const tiles = [
             { char: '.', name: 'Empty', color: '#000' },
@@ -344,6 +408,11 @@
                 btn.title = tile.name;
                 btn.onclick = () => selectTile(tile.char, btn);
 
+                // Add hover events to show sprite tooltip
+                btn.addEventListener('mouseenter', (e) => showSpriteTooltip(e, tile));
+                btn.addEventListener('mousemove', (e) => updateTooltipPosition(e));
+                btn.addEventListener('mouseleave', hideSpriteTooltip);
+
                 const container = document.createElement('div');
                 container.appendChild(btn);
                 const info = document.createElement('div');
@@ -352,6 +421,60 @@
                 container.appendChild(info);
                 palette.appendChild(container);
             });
+        }
+
+        function showSpriteTooltip(e, tile) {
+            const tooltip = document.getElementById('spriteTooltip');
+            const tooltipCanvas = document.getElementById('tooltipCanvas');
+            const tooltipName = document.getElementById('tooltipName');
+            const ctx = tooltipCanvas.getContext('2d');
+
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, 64, 64);
+
+            // Get sprite coordinates
+            const coords = spriteCoords[tile.name];
+            if (coords && spriteSheet.complete) {
+                // Draw sprite from sprite sheet (32x32 sprite scaled to 64x64)
+                const gridSize = 34; // sprite grid size
+                const cellSize = 32; // sprite cell size
+                const offset = 2;
+
+                ctx.drawImage(
+                    spriteSheet,
+                    offset + coords[0] * gridSize,
+                    offset + coords[1] * gridSize,
+                    cellSize,
+                    cellSize,
+                    0, 0,
+                    64, 64
+                );
+            } else {
+                // Fallback: show ASCII character
+                ctx.fillStyle = tile.color;
+                ctx.fillRect(8, 8, 48, 48);
+                ctx.fillStyle = tile.color === '#000' ? '#fff' : '#000';
+                ctx.font = '32px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(tile.char === '.' ? '·' : tile.char, 32, 32);
+            }
+
+            tooltipName.textContent = tile.name;
+            tooltip.style.display = 'block';
+            updateTooltipPosition(e);
+        }
+
+        function updateTooltipPosition(e) {
+            const tooltip = document.getElementById('spriteTooltip');
+            tooltip.style.left = (e.clientX + 15) + 'px';
+            tooltip.style.top = (e.clientY + 15) + 'px';
+        }
+
+        function hideSpriteTooltip() {
+            const tooltip = document.getElementById('spriteTooltip');
+            tooltip.style.display = 'none';
         }
 
         function selectTile(char, btn) {

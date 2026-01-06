@@ -7,7 +7,11 @@
             this.direction = 1;
             this.stepAnimation = 0;
             this.keys = 0;
-            this.ammo = 0;
+            this.ammo = 1;  // Start with 1 pistol ammo
+            this.flamethrower = 1;  // Start with 1 flamethrower ammo
+            this.bazooka = 1;  // Start with 1 bazooka ammo
+            this.shield = 0;  // Start with 0 shield
+            this.currentWeapon = 1;  // 1=pistol, 2=flamethrower, 3=bazooka
             this.inited = true;
             game.addActionObject(this);
             //this.noMove = true;
@@ -15,7 +19,6 @@
             game.delayedFn(function(){
                 this.game.set('screw', this.game.screw);
             }.bind(this),6);
-            //this.ammo = 9;
             /*game.once('scrolled',function(){
                 this.inited = true;
                 debugger;
@@ -44,15 +47,47 @@
         fireAction: function( ){
             this.fire = false;
             this.animateStep = true;
-            if( this.fireDelay || this.noMove || !this.ammo )
+            if( this.fireDelay || this.noMove )
                 return;
 
+            var weaponType, ammoKey;
 
-            this.set( 'ammo', this.ammo - 1 );
-            if( R.behaviors.fire.call( this ) !== false ){
-                this.game.playSound('shoot_default');
+            // Determine weapon type and ammo key based on currentWeapon
+            if(this.currentWeapon === 1){
+                weaponType = 'gun';
+                ammoKey = 'ammo';
+            } else if(this.currentWeapon === 2){
+                weaponType = 'flamethrower';
+                ammoKey = 'flamethrower';
+            } else if(this.currentWeapon === 3){
+                weaponType = 'bazooka';
+                ammoKey = 'bazooka';
+            }
 
-                this.fireDelay = 2;
+            // Check if we have ammo for this weapon
+            if(!this[ammoKey] || this[ammoKey] <= 0)
+                return;
+
+            this.set( ammoKey, this[ammoKey] - 1 );
+
+            if(weaponType === 'bazooka'){
+                // Bazooka fires a special explosive bullet
+                if( R.behaviors.fireBazooka.call( this ) !== false ){
+                    this.game.playSound('shoot_default');
+                    this.fireDelay = 4;  // Longer delay for bazooka
+                }
+            } else if(weaponType === 'flamethrower'){
+                // Flamethrower fires multiple bullets in a spread
+                if( R.behaviors.fireFlamethrower.call( this ) !== false ){
+                    this.game.playSound('shoot_default');
+                    this.fireDelay = 3;  // Medium delay for flamethrower
+                }
+            } else {
+                // Regular gun
+                if( R.behaviors.fire.call( this ) !== false ){
+                    this.game.playSound('shoot_default');
+                    this.fireDelay = 2;
+                }
             }
         },
         step: function(  ){

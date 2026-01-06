@@ -132,6 +132,11 @@
                 return [ 5, 1 ]; //spaceship
         },
 
+        RobboBot: function(  ){
+            // Use same sprites as Robbo but will be rendered with different color
+            return [ this.direction * 2 + this.stepAnimation, 5 ];
+        },
+
         Empty: [ 10, 2 ],
 
         Walls: {
@@ -208,6 +213,11 @@
                     return [ ( this.direction % 2 ) * 2 + (step2 % 4 < 2 ? 1: 0), 3 ];
                 },
                 gun: fn,
+                flamethrower: fn,
+                bazooka: function( step, step2 ){
+                    // Use bomb sprite for bazooka
+                    return [ 8, 0 ];
+                },
                 antimatter: function(){
                     return [[0,1,2,3,2,1,0][this.animation],7];
                 }
@@ -243,6 +253,9 @@
 
         'hud.screw': [ 4, 3 ],
         'hud.ammo': [ 7, 3 ],
+        'hud.flamethrower': [ 0, 3 ],  // Using laser bullet sprite
+        'hud.bazooka': [ 2, 3 ],       // Using horizontal laser sprite
+        'hud.shield': [ 8, 0 ],        // Using bomb sprite as shield
         'hud.keys': [ 6, 3 ],
         'hud.planet': [ 8, 3 ],
         'hud.lives': [ 5, 3 ],

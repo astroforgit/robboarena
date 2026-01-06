@@ -308,6 +308,23 @@
           } );
           this.keyboard.get( 'x' ); // empty action in tests
 
+          // Weapon switching
+          if( this.keyboard.get( '1'.charCodeAt( 0 ) ) ){
+            robbo.currentWeapon = 1;
+            this.view.updateHud();
+            console.log('Switched to Pistol');
+          }
+          if( this.keyboard.get( '2'.charCodeAt( 0 ) ) ){
+            robbo.currentWeapon = 2;
+            this.view.updateHud();
+            console.log('Switched to Flamethrower');
+          }
+          if( this.keyboard.get( '3'.charCodeAt( 0 ) ) ){
+            robbo.currentWeapon = 3;
+            this.view.updateHud();
+            console.log('Switched to Bazooka');
+          }
+
           this.keyboard.get( 'R'.charCodeAt( 0 ) ) && this.restart();
           this.keyboard.get( 'K'.charCodeAt( 0 ) ) && this.finishLevel();
 
