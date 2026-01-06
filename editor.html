@@ -17,10 +17,10 @@
             text-align: center;
         }
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 250px 1fr;
+            grid-template-columns: 250px 1fr 300px;
             gap: 20px;
         }
         .sidebar {
@@ -187,7 +187,11 @@
 </head>
 <body>
     <h1>🎮 Robbo Level Editor</h1>
-    
+    <p style="text-align:center; color:#888; font-size:12px; margin-bottom:15px;">
+        💡 Use <strong>⚙️ Properties tool</strong> to configure cannons (}), teleports (&), birds (^), or bears (@)
+        | Green dot = has properties configured
+    </p>
+
     <!-- Sprite Tooltip -->
     <div class="sprite-tooltip" id="spriteTooltip">
         <canvas id="tooltipCanvas" width="64" height="64"></canvas>
@@ -208,7 +212,7 @@
                     <button class="tool-btn" data-tool="erase">🧹 Erase</button>
                 </div>
                 <div class="tool-group">
-                    <button class="tool-btn" data-tool="fill">🪣 Fill</button>
+                    <button class="tool-btn" data-tool="properties">⚙️ Properties</button>
                     <button class="tool-btn" data-tool="pick">🎯 Pick</button>
                 </div>
             </div>
@@ -258,10 +262,39 @@
                 <strong>💡 Tips:</strong>
                 <ul style="margin-left: 20px; margin-top: 5px;">
                     <li>Click tiles to place them on the map</li>
-                    <li>Use tools for faster editing (Fill, Pick, etc.)</li>
+                    <li>Use ⚙️ Properties tool to configure objects</li>
                     <li>Export creates level data you can copy to js/levels.js</li>
                     <li>Test opens the map in the game</li>
                 </ul>
+            </div>
+        </div>
+
+        <div class="sidebar" id="rightPanel">
+            <div class="section">
+                <h2>⚙️ Object Properties</h2>
+                <div id="propertiesContent" style="font-size:11px;">
+                    <p style="color:#888; text-align:center; padding:20px 0;">
+                        Select ⚙️ Properties tool, then click on an object to configure it.
+                    </p>
+                    <div style="margin-top:15px; padding:10px; background:#1a1a1a; border-radius:4px;">
+                        <p style="margin-bottom:8px;"><strong>Supported Objects:</strong></p>
+                        <ul style="margin-left:15px; font-size:10px; line-height:1.6;">
+                            <li><strong>}</strong> Gun/Turret - direction, bullet type, movement</li>
+                            <li><strong>&</strong> Teleport - ID and group index</li>
+                            <li><strong>^</strong> Bird - direction, can fire</li>
+                            <li><strong>@</strong> Bear - direction</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top:15px; padding:10px; background:#1a1a1a; border-radius:4px;">
+                        <p style="margin-bottom:8px;"><strong>Direction Values:</strong></p>
+                        <pre style="font-size:10px; color:#6af; text-align:center;">
+    0 (Up)
+    ↑
+3 ← + → 1
+    ↓
+  2 (Down)</pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -380,6 +413,7 @@
         let mapHeight = 31;
         let cellSize = 16;
         let map = [];
+        let additionalData = {}; // Store properties for special objects
         let selectedTile = '.';
         let currentTool = 'draw';
         let isDrawing = false;
@@ -536,6 +570,7 @@
             canvas.addEventListener('mouseleave', () => {
                 isDrawing = false;
             });
+
         }
 
         function handleCanvasClick(e) {
@@ -560,24 +595,12 @@
                         selectTile(pickedChar, tileBtn);
                     }
                     break;
-                case 'fill':
-                    floodFill(x, y, map[y][x], selectedTile);
-                    break;
+                case 'properties':
+                    showProperties(x, y);
+                    return; // Don't render, showProperties will handle it
             }
 
             render();
-        }
-
-        function floodFill(x, y, targetChar, replacementChar) {
-            if (targetChar === replacementChar) return;
-            if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) return;
-            if (map[y][x] !== targetChar) return;
-
-            map[y][x] = replacementChar;
-            floodFill(x + 1, y, targetChar, replacementChar);
-            floodFill(x - 1, y, targetChar, replacementChar);
-            floodFill(x, y + 1, targetChar, replacementChar);
-            floodFill(x, y - 1, targetChar, replacementChar);
         }
 
         function render() {
@@ -621,11 +644,174 @@
                 ctx.lineTo(canvas.width, y * cellSize);
                 ctx.stroke();
             }
+
+            // Draw indicators for objects with properties
+            for (let key in additionalData) {
+                const [x, y] = key.split('.').map(Number);
+                ctx.fillStyle = '#0f0';
+                ctx.fillRect(x * cellSize + cellSize - 4, y * cellSize, 4, 4);
+            }
+        }
+
+        function showProperties(x, y) {
+            const char = map[y][x];
+            const key = `${x}.${y}`;
+            const content = document.getElementById('propertiesContent');
+
+            // Only show properties for special objects
+            if (char === '}') {
+                // Turret/Gun properties
+                const props = additionalData[key] || {
+                    direction: 0,
+                    moveDirection: 0,
+                    bulletType: 0,
+                    movable: 0,
+                    rotatable: 0
+                };
+
+                content.innerHTML = `
+                    <div style="font-size:11px;">
+                        <p style="margin-bottom:10px;"><strong>Gun/Turret (${x},${y})</strong></p>
+                        <label style="display:block;margin-bottom:8px;">
+                            Direction (0-3):
+                            <input type="number" id="prop_direction" value="${props.direction}" min="0" max="3" style="width:50px;">
+                        </label>
+                        <label style="display:block;margin-bottom:8px;">
+                            Move Dir (0-3):
+                            <input type="number" id="prop_moveDirection" value="${props.moveDirection}" min="0" max="3" style="width:50px;">
+                        </label>
+                        <label style="display:block;margin-bottom:8px;">
+                            Bullet Type:
+                            <select id="prop_bulletType" style="width:100px;">
+                                <option value="0" ${props.bulletType == 0 ? 'selected' : ''}>Gun</option>
+                                <option value="1" ${props.bulletType == 1 ? 'selected' : ''}>Laser</option>
+                                <option value="2" ${props.bulletType == 2 ? 'selected' : ''}>Antimatter</option>
+                            </select>
+                        </label>
+                        <label style="display:block;margin-bottom:8px;">
+                            <input type="checkbox" id="prop_movable" ${props.movable ? 'checked' : ''}>
+                            Movable
+                        </label>
+                        <label style="display:block;margin-bottom:8px;">
+                            <input type="checkbox" id="prop_rotatable" ${props.rotatable ? 'checked' : ''}>
+                            Rotatable
+                        </label>
+                        <button onclick="saveProperties(${x}, ${y})" style="width:100%;margin-top:10px;">💾 Save</button>
+                        <button onclick="deleteProperties(${x}, ${y})" style="width:100%;margin-top:5px;">🗑️ Delete Props</button>
+                    </div>
+                `;
+            } else if (char === '&') {
+                // Teleport properties
+                const props = additionalData[key] || {
+                    teleportId: 0,
+                    teleportIndex: 0
+                };
+
+                content.innerHTML = `
+                    <div style="font-size:11px;">
+                        <p style="margin-bottom:10px;"><strong>Teleport (${x},${y})</strong></p>
+                        <label style="display:block;margin-bottom:8px;">
+                            Teleport ID:
+                            <input type="number" id="prop_teleportId" value="${props.teleportId}" min="0" style="width:50px;">
+                        </label>
+                        <label style="display:block;margin-bottom:8px;">
+                            Index in Group:
+                            <input type="number" id="prop_teleportIndex" value="${props.teleportIndex}" min="0" style="width:50px;">
+                        </label>
+                        <p style="font-size:10px;color:#888;margin-top:10px;">
+                            Teleports with same ID form a group. Index determines order.
+                        </p>
+                        <button onclick="saveProperties(${x}, ${y})" style="width:100%;margin-top:10px;">💾 Save</button>
+                        <button onclick="deleteProperties(${x}, ${y})" style="width:100%;margin-top:5px;">🗑️ Delete Props</button>
+                    </div>
+                `;
+            } else if (char === '^' || char === '@' || char === '*') {
+                // Bird/Bear properties
+                const props = additionalData[key] || {
+                    direction: 0,
+                    fire: 0
+                };
+
+                content.innerHTML = `
+                    <div style="font-size:11px;">
+                        <p style="margin-bottom:10px;"><strong>${char === '^' ? 'Bird' : 'Bear'} (${x},${y})</strong></p>
+                        <label style="display:block;margin-bottom:8px;">
+                            Direction (0-3):
+                            <input type="number" id="prop_direction" value="${props.direction}" min="0" max="3" style="width:50px;">
+                        </label>
+                        ${char === '^' ? `
+                        <label style="display:block;margin-bottom:8px;">
+                            <input type="checkbox" id="prop_fire" ${props.fire ? 'checked' : ''}>
+                            Can Fire
+                        </label>
+                        ` : ''}
+                        <button onclick="saveProperties(${x}, ${y})" style="width:100%;margin-top:10px;">💾 Save</button>
+                        <button onclick="deleteProperties(${x}, ${y})" style="width:100%;margin-top:5px;">🗑️ Delete Props</button>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <p style="color:#f80; text-align:center; padding:20px 0;">
+                        ⚠️ This object (${char}) doesn't support properties.
+                    </p>
+                    <div style="margin-top:15px; padding:10px; background:#1a1a1a; border-radius:4px;">
+                        <p style="margin-bottom:8px;"><strong>Supported Objects:</strong></p>
+                        <ul style="margin-left:15px; font-size:10px; line-height:1.6;">
+                            <li><strong>}</strong> Gun/Turret - direction, bullet type, movement</li>
+                            <li><strong>&</strong> Teleport - ID and group index</li>
+                            <li><strong>^</strong> Bird - direction, can fire</li>
+                            <li><strong>@</strong> Bear - direction</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        function saveProperties(x, y) {
+            const char = map[y][x];
+            const key = `${x}.${y}`;
+
+            if (char === '}') {
+                additionalData[key] = {
+                    direction: parseInt(document.getElementById('prop_direction').value),
+                    moveDirection: parseInt(document.getElementById('prop_moveDirection').value),
+                    bulletType: parseInt(document.getElementById('prop_bulletType').value),
+                    movable: document.getElementById('prop_movable').checked ? 1 : 0,
+                    rotatable: document.getElementById('prop_rotatable').checked ? 1 : 0
+                };
+            } else if (char === '&') {
+                additionalData[key] = {
+                    teleportId: parseInt(document.getElementById('prop_teleportId').value),
+                    teleportIndex: parseInt(document.getElementById('prop_teleportIndex').value)
+                };
+            } else if (char === '^') {
+                additionalData[key] = {
+                    direction: parseInt(document.getElementById('prop_direction').value),
+                    fire: document.getElementById('prop_fire').checked ? 1 : 0
+                };
+            } else if (char === '@' || char === '*') {
+                additionalData[key] = {
+                    direction: parseInt(document.getElementById('prop_direction').value)
+                };
+            }
+
+            render(); // Re-render to show green dot
+            alert('✅ Properties saved!');
+        }
+
+        function deleteProperties(x, y) {
+            const key = `${x}.${y}`;
+            delete additionalData[key];
+            render(); // Re-render to remove green dot
+            alert('Properties deleted!');
+            // Refresh the properties panel to show default values
+            showProperties(x, y);
         }
 
         function newMap() {
             if (confirm('Create a new map? Current map will be lost.')) {
                 initMap();
+                additionalData = {};
                 render();
             }
         }
@@ -633,6 +819,7 @@
         function clearMap() {
             if (confirm('Clear the entire map?')) {
                 initMap();
+                additionalData = {};
                 render();
             }
         }
@@ -666,6 +853,30 @@
             const mapData = map.map(row => row.join('')).join('\n');
             const colorScheme = document.getElementById('colorScheme').value;
 
+            // Build additional data section
+            let additionalLines = [];
+            for (let key in additionalData) {
+                const [x, y] = key.split('.').map(Number);
+                const props = additionalData[key];
+                const char = map[y][x];
+
+                if (char === '}') {
+                    // Gun/Turret: x.y.direction.moveDirection.bulletType.movable.rotatable
+                    additionalLines.push(`${x}.${y}.${props.direction}.${props.moveDirection}.${props.bulletType}.${props.movable}.${props.rotatable}`);
+                } else if (char === '&') {
+                    // Teleport: x.y.teleportId.teleportIndex
+                    additionalLines.push(`${x}.${y}.${props.teleportId}.${props.teleportIndex}`);
+                } else if (char === '^') {
+                    // Bird: x.y.direction.fire
+                    additionalLines.push(`${x}.${y}.${props.direction}.${props.fire}`);
+                } else if (char === '@' || char === '*') {
+                    // Bear: x.y.direction
+                    additionalLines.push(`${x}.${y}.${props.direction}`);
+                }
+            }
+
+            const additionalSection = additionalLines.length > 0 ? additionalLines.join('\n') : '0';
+
             const levelData = `    [level]
     NEW_LEVEL
     [colour]
@@ -679,7 +890,7 @@
     [data]
 ${mapData}
     [additional]
-    0
+    ${additionalSection}
     [end]`;
 
             document.getElementById('exportData').value = levelData;
@@ -731,6 +942,51 @@ ${mapData}
                     const line = mapLines[y] || '';
                     for (let x = 0; x < mapWidth; x++) {
                         map[y][x] = line[x] || '.';
+                    }
+                }
+
+                // Parse additional data
+                additionalData = {};
+                const additionalMatch = data.match(/\[additional\]([\s\S]*?)\[end\]/);
+                if (additionalMatch) {
+                    const additionalLines = additionalMatch[1].trim().split('\n').map(line => line.trim()).filter(line => line && line !== '0');
+
+                    for (let line of additionalLines) {
+                        const parts = line.split('.').map(Number);
+                        if (parts.length >= 2) {
+                            const x = parts[0];
+                            const y = parts[1];
+                            const key = `${x}.${y}`;
+                            const char = map[y] && map[y][x];
+
+                            if (char === '}' && parts.length >= 7) {
+                                // Gun/Turret: x.y.direction.moveDirection.bulletType.movable.rotatable
+                                additionalData[key] = {
+                                    direction: parts[2],
+                                    moveDirection: parts[3],
+                                    bulletType: parts[4],
+                                    movable: parts[5],
+                                    rotatable: parts[6]
+                                };
+                            } else if (char === '&' && parts.length >= 4) {
+                                // Teleport: x.y.teleportId.teleportIndex
+                                additionalData[key] = {
+                                    teleportId: parts[2],
+                                    teleportIndex: parts[3]
+                                };
+                            } else if (char === '^' && parts.length >= 4) {
+                                // Bird: x.y.direction.fire
+                                additionalData[key] = {
+                                    direction: parts[2],
+                                    fire: parts[3]
+                                };
+                            } else if ((char === '@' || char === '*') && parts.length >= 3) {
+                                // Bear: x.y.direction
+                                additionalData[key] = {
+                                    direction: parts[2]
+                                };
+                            }
+                        }
                     }
                 }
 
