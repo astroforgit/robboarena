@@ -23,67 +23,119 @@
         },
         demolishable: true,
         demolish: function(){
-            if(this.isDead) return;
+            console.log('=== DEMOLISH CALLED ===');
+            console.log('Bot ID:', this.botId, 'Position:', this.x, this.y);
+            console.log('isDead before:', this.isDead);
+
+            if(this.isDead){
+                console.log('Bot already dead, skipping demolish');
+                return;
+            }
+
             this.isDead = true;
             this.dead = true;
+            console.log('Bot marked as dead');
 
-            console.log('RobboBot killed at', this.x, this.y, '- scheduling respawn in', this.respawnTime, 'ticks');
+            console.log('RobboBot #' + this.botId + ' killed at', this.x, this.y, '- scheduling respawn in', this.respawnTime, 'ticks');
+
+            // Increment player's kill counter (lives counter shows kills)
+            if(this.game.robbo){
+                this.game.robbo.set('lives', this.game.robbo.lives + 1);
+                console.log('Kill count:', this.game.robbo.lives);
+            }
 
             // Drop a screw at death location
             var screwPos = {x: this.x, y: this.y};
             var screwObj = null;
 
+            console.log('Scheduling screw drop at', screwPos.x, screwPos.y, 'in 3 ticks');
             this.game.delayedFn(function(){
+                console.log('Screw drop timer triggered');
                 var cell = this.game.getCell(screwPos);
+                console.log('Cell at screw position:', cell.type);
+
                 if(cell.is('Empty') || cell.is('Explosion')){
                     screwObj = this.game.setCell(screwPos, 'Screw');
                     this.game.screw++; // Increment screw count
-                    console.log('Screw dropped at', screwPos.x, screwPos.y);
+                    console.log('✓ Screw dropped at', screwPos.x, screwPos.y);
 
                     // Make screw disappear after 5 seconds (~78 ticks)
+                    console.log('Scheduling screw disappear in 78 ticks');
                     this.game.delayedFn(function(){
+                        console.log('Screw disappear timer triggered');
                         var currentCell = this.game.getCell(screwPos);
                         if(currentCell === screwObj && currentCell.is('Screw')){
                             this.game.setCell(screwPos, 'Empty');
                             this.game.screw--; // Decrement screw count
-                            console.log('Screw disappeared at', screwPos.x, screwPos.y);
+                            console.log('✓ Screw disappeared at', screwPos.x, screwPos.y);
+                        } else {
+                            console.log('Screw already gone or replaced');
                         }
                     }.bind(this), 78);
+                } else {
+                    console.log('✗ Cannot drop screw - cell not empty:', cell.type);
                 }
             }.bind(this), 3);
 
             // Schedule respawn
+            console.log('Scheduling respawn in', this.respawnTime, 'ticks');
             this.game.delayedFn(function(){
-                console.log('Respawn timer triggered');
+                console.log('=== RESPAWN TIMER TRIGGERED ===');
+                console.log('Bot ID:', this.botId);
                 this.respawn();
             }.bind(this), this.respawnTime);
+
+            console.log('=== DEMOLISH COMPLETE ===');
         },
         explodable: true,
         explode: function(){
             this.demolish();
         },
         respawn: function(){
-            if(!this.isDead) return;
+            console.log('=== RESPAWN FUNCTION CALLED ===');
+            console.log('Bot ID:', this.botId);
+            console.log('isDead:', this.isDead);
+            console.log('dead:', this.dead);
+            console.log('Current position:', this.x, this.y);
 
-            console.log('RobboBot respawning...');
+            if(!this.isDead){
+                console.log('✗ Bot not dead, aborting respawn');
+                return;
+            }
+
+            console.log('✓ Bot is dead, proceeding with respawn');
 
             // Find random empty position
+            console.log('Searching for empty cells...');
+
+            // Calculate map dimensions from the map array
+            var mapHeight = this.game.map.length;
+            var mapWidth = 0;
+            for(var i = 0; i < mapHeight; i++){
+                if(this.game.map[i] && this.game.map[i].length > mapWidth){
+                    mapWidth = this.game.map[i].length;
+                }
+            }
+            console.log('Map dimensions:', mapWidth, 'x', mapHeight);
+
             var emptyCells = [];
-            for(var y = 0; y < this.game.height; y++){
-                for(var x = 0; x < this.game.width; x++){
+            for(var y = 0; y < mapHeight; y++){
+                for(var x = 0; x < mapWidth; x++){
                     var cell = this.game.getCell({x: x, y: y});
-                    if(cell.is('Empty')){
+                    if(cell && cell.is('Empty')){
                         emptyCells.push({x: x, y: y});
                     }
                 }
             }
+            console.log('Found', emptyCells.length, 'empty cells');
 
             if(emptyCells.length > 0){
                 var pos = emptyCells[R.rand(0, emptyCells.length - 1)];
 
-                console.log('RobboBot respawning at', pos.x, pos.y);
+                console.log('Selected respawn position:', pos.x, pos.y);
 
                 // Reset bot state BEFORE placing on map
+                console.log('Resetting bot state...');
                 this.isDead = false;
                 this.dead = false;
                 this.ammo = 10;
@@ -95,28 +147,58 @@
                 this.pathUpdateDelay = 0;
                 this.x = pos.x;
                 this.y = pos.y;
+                console.log('✓ Bot state reset');
 
                 // Place bot on map and add to action objects
-                this.game.setCell(pos, this);
+                console.log('Placing bot on map at', pos.x, pos.y);
+                var placedCell = this.game.setCell(pos, this);
+                console.log('setCell returned:', placedCell);
 
                 // Make sure bot is in action objects list
+                console.log('Checking action objects list...');
+                console.log('Total action objects:', this.game.actionObjects.length);
                 var inList = false;
                 for(var i = 0; i < this.game.actionObjects.length; i++){
                     if(this.game.actionObjects[i] === this){
                         inList = true;
+                        console.log('✓ Bot found in action objects at index', i);
                         break;
                     }
                 }
+
                 if(!inList){
+                    console.log('Bot not in action objects, adding...');
                     this.game.addActionObject(this);
-                    console.log('RobboBot added to action objects');
+                    console.log('✓ RobboBot added to action objects');
+                } else {
+                    console.log('✓ Bot already in action objects');
                 }
 
                 // Redraw the bot
+                console.log('Redrawing bot...');
                 this.game.view.redraw(this);
-                console.log('RobboBot respawn complete');
+                console.log('✓ Bot redrawn');
+
+                // Verify placement
+                var verifyCell = this.game.getCell(pos);
+                console.log('Verification - cell at', pos.x, pos.y, 'is:', verifyCell.type);
+                console.log('Verification - is RobboBot?', verifyCell.is('RobboBot'));
+
+                console.log('=== RESPAWN COMPLETE ===');
             } else {
-                console.log('RobboBot respawn failed - no empty cells');
+                console.log('✗✗✗ RobboBot respawn FAILED - no empty cells found ✗✗✗');
+
+                // Calculate map dimensions for error message
+                var mapHeight = this.game.map.length;
+                var mapWidth = 0;
+                for(var i = 0; i < mapHeight; i++){
+                    if(this.game.map[i] && this.game.map[i].length > mapWidth){
+                        mapWidth = this.game.map[i].length;
+                    }
+                }
+                console.log('Map size:', mapWidth, 'x', mapHeight);
+                console.log('All cells are occupied - need more empty space!');
+                console.log('=== RESPAWN FAILED ===');
             }
         },
         findNearestBot: function(){
@@ -250,7 +332,13 @@
             return Math.random() < shootChance;
         },
         step: function(){
-            if(this.isDead) return;
+            if(this.isDead){
+                // Log occasionally to see if dead bots are still being stepped
+                if(Math.random() < 0.01){ // 1% chance to log
+                    console.log('Dead bot #' + this.botId + ' step() called but skipped');
+                }
+                return;
+            }
 
             this.fireDelay = this.fireDelay > 0 ? this.fireDelay - 1 : 0;
             this.moveDelay = this.moveDelay > 0 ? this.moveDelay - 1 : 0;
@@ -354,6 +442,10 @@
                 this.stepAnimation = (this.stepAnimation + 1) % 2;
                 this.game.view.redraw(this);
             }
+        },
+        dieCheck: function(){
+            // Kill Robbo if adjacent
+            R.behaviors.killRobbo.call(this);
         }
     };
 })(window.R);

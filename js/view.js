@@ -232,28 +232,28 @@
 
             var sprites = this.sprites;
 
-            // Show ammo, flamethrower, bazooka, lives, keys, shield with 5-cell spacing
-            var x = {ammo: 1, flamethrower: 6, bazooka: 11, lives: 16, keys: 21, shield: 26}[name],
+            // Show ammo, flamethrower, bazooka, shield, lives, keys with 5-cell spacing
+            var x = {ammo: 1, flamethrower: 6, bazooka: 11, shield: 16, lives: 21, keys: 26}[name],
                 cellSize = this.cellSize;
             if(!x)return;
             this.legendCtx.fillStyle = this.lastColors[4];
+            // Clear area for both digits
             this.legendCtx.fillRect(
                 x*cellSize+cellSize+4,
-                8,
+                cellSize/2,
                 cellSize*2,
                 cellSize
             );
-            this.legendCtx.fillStyle = '#fff';
 
-            sprites.draw(
-                this.legendCtx,
-                sprites.resolveSprite( {type: 'hud.digit.'+ (((value % 100)/10)|0) } ),
-                [ x*cellSize+cellSize+6, 8, cellSize/2, cellSize, cellSize/2 ]
-            );
-            sprites.draw(
-                this.legendCtx,
-                sprites.resolveSprite( {type: 'hud.digit.'+ (value % 10) } ),
-                [ x*cellSize+cellSize+14, 8, cellSize/2, cellSize, cellSize/2 ]
+            // Draw digits as text for better visibility
+            this.legendCtx.fillStyle = '#fff';
+            this.legendCtx.font = '12px monospace';
+            this.legendCtx.textAlign = 'left';
+            this.legendCtx.textBaseline = 'top';
+            this.legendCtx.fillText(
+                (value < 10 ? '0' : '') + value,  // Pad with 0 if single digit
+                x*cellSize+cellSize+6,
+                cellSize/2 + 2
             );
 
             /*this.legendCtx.fillText(
@@ -268,21 +268,47 @@
 
             var sprites = this.sprites;
 
+            // Clear the entire HUD area first
+            this.legendCtx.clearRect(0, 0, this.legend.width, this.legend.height);
+
             var c = 1, cellSize = this.cellSize;
             var weaponIndex = 1;
 
-            // Show ammo, flamethrower, bazooka, lives, keys, shield with more spacing
-            'ammo,flamethrower,bazooka,lives,keys,shield'.split(',').forEach(function( key ){
-                sprites.draw(
-                    this.legendCtx,
-                    sprites.resolveSprite( {type: 'hud.' + key } ),
-                    [ cellSize*c, cellSize/2, cellSize, cellSize ]
-                );
+            // Emoji icons for special items
+            var emojiIcons = {
+                'flamethrower': '🔥',  // Fire emoji for flamethrower
+                'bazooka': '💥',       // Explosion emoji for bazooka
+                'shield': '🛡️',       // Shield emoji
+                'lives': '💀'          // Skull emoji for killed RobboBots counter
+            };
+
+            // Show ammo, flamethrower, bazooka, shield, lives, keys with more spacing
+            'ammo,flamethrower,bazooka,shield,lives,keys'.split(',').forEach(function( key ){
+                // Use emoji for flamethrower and bazooka, sprites for others
+                if(emojiIcons[key]){
+                    // Draw emoji icon
+                    this.legendCtx.font = '14px Arial';
+                    this.legendCtx.textAlign = 'center';
+                    this.legendCtx.textBaseline = 'middle';
+                    this.legendCtx.fillText(
+                        emojiIcons[key],
+                        cellSize*c + cellSize/2,
+                        cellSize/2 + cellSize/2
+                    );
+                } else {
+                    // Draw sprite icon
+                    sprites.draw(
+                        this.legendCtx,
+                        sprites.resolveSprite( {type: 'hud.' + key } ),
+                        [ cellSize*c, cellSize/2, cellSize, cellSize ]
+                    );
+                }
 
                 // Draw weapon number (1, 2, 3) for weapons
                 if(weaponIndex <= 3){
                     this.legendCtx.fillStyle = '#fff';
                     this.legendCtx.font = '8px monospace';
+                    this.legendCtx.textAlign = 'left';
                     this.legendCtx.fillText(
                         weaponIndex.toString(),
                         cellSize*c - 6,
@@ -292,7 +318,9 @@
                 }
 
                 c += 5; // Increased spacing to 5 cells (80 pixels) for better digit visibility
-                this.redrawHud( key, this[ key ] );
+                // Get value from robbo if it exists, otherwise from view
+                var value = (this.controller.robbo && this.controller.robbo[key]) || this[key] || 0;
+                this.redrawHud( key, value );
             }.bind(this) )
 
             // Draw weapon selection indicator
@@ -305,9 +333,9 @@
             var currentWeapon = this.controller.robbo.currentWeapon;
             var cellSize = this.cellSize;
             var weaponPositions = {
-                1: 1,  // ammo/pistol
-                2: 6,  // flamethrower (1 + 5)
-                3: 11  // bazooka (1 + 5 + 5)
+                1: 1,   // ammo/pistol at position 1
+                2: 6,   // flamethrower at position 2 (1 + 5)
+                3: 11   // bazooka at position 3 (1 + 5 + 5)
             };
 
             var x = weaponPositions[currentWeapon];

@@ -9,26 +9,31 @@
             this.game.set( 'screw', this.game.screw - 1 );
             this.game.playSound('screw');
 
-            // Random chance to get ammo when collecting screw
+            // Random chance to get bonus items when collecting screw
             var rand = Math.random();
 
+            // 5% chance (1/20) to get 1 shield - VERY RARE!
+            if(rand < 0.05){
+                eater.set('shield', eater.shield + 1);
+                console.log('Got 1 shield from screw! (RARE!)');
+            }
             // 40% chance to get 1-3 bullets
-            if(rand < 0.4){
+            else if(rand < 0.45){
                 var bullets = R.rand(1, 3);
                 eater.set('ammo', eater.ammo + bullets);
                 console.log('Got', bullets, 'bullets from screw!');
             }
             // 20% chance to get 1 flamethrower ammo
-            else if(rand < 0.6){
+            else if(rand < 0.65){
                 eater.set('flamethrower', eater.flamethrower + 1);
                 console.log('Got 1 flamethrower ammo from screw!');
             }
             // 20% chance to get 1 bazooka ammo
-            else if(rand < 0.8){
+            else if(rand < 0.85){
                 eater.set('bazooka', eater.bazooka + 1);
                 console.log('Got 1 bazooka ammo from screw!');
             }
-            // 20% chance to get nothing extra
+            // 15% chance to get nothing extra
         },
         explodable: true
     };

@@ -11,6 +11,7 @@
             this.flamethrower = 1;  // Start with 1 flamethrower ammo
             this.bazooka = 1;  // Start with 1 bazooka ammo
             this.shield = 0;  // Start with 0 shield
+            this.lives = 0;  // Start with 0 kills (kill counter)
             this.currentWeapon = 1;  // 1=pistol, 2=flamethrower, 3=bazooka
             this.inited = true;
             game.addActionObject(this);
@@ -36,13 +37,31 @@
         },
         demolishable: true,
         demolish: function(  ){
+            console.log('=== ROBBO DEMOLISH CALLED ===');
+            console.log('Shields:', this.shield);
 
+            // Check if player has shields
+            if( this.shield > 0 ){
+                // Lose 1 shield instead of dying
+                this.set('shield', this.shield - 1);
+                console.log('✓ Shield protected you! Shields remaining:', this.shield);
+                this.game.playSound('key'); // Play sound for shield use
+
+                // Brief invulnerability flash
+                this.game.view.blink = 2;
+
+                return false; // Don't die
+            }
+
+            // No shields - die normally
+            console.log('✗ No shields - Robbo dies');
             !this.dead && this.game.restart();
             this.dead = true;
         },
         explodable: true,
         explode: function(  ){
-            this.demolish();
+            console.log('=== ROBBO EXPLODE CALLED ===');
+            return this.demolish();
         },
         fireAction: function( ){
             this.fire = false;

@@ -7,14 +7,18 @@
         movable: true,
         eatable: true,
         eat: function( eater ){
-            if( this.game.screw === 0 || this.fromQuestion ){
-                this.movable = false;
-                eater.noMove = true;
-                this.game.setCell( eater, 'Empty');
-                this.game.playSound( 'end_default' );
-                this.game.finishLevel();
+            // Arena mode: All spaceships/capsules give +1 shield
+            eater.set('shield', eater.shield + 1);
+            this.game.playSound('key'); // Use key sound for shield pickup
+
+            if( this.fromQuestion ){
+                console.log('Got 1 shield from capsule!');
+            } else {
+                console.log('Got 1 shield from spaceship!');
             }
-            return false;
+
+            // Capsule/spaceship disappears after pickup
+            return true;
         },
         move: R.behaviors.move
     };
